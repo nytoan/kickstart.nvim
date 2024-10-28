@@ -190,6 +190,10 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
+-- Remapper les touches pour déplacer les lignes
+vim.keymap.set('n', '<A-j>', ':m .+1<CR>==', { desc = 'Move line down' }) -- Alt + j pour descendrej
+vim.keymap.set('n', '<A-k>', ':m .-2<CR>==', { desc = 'Move line up' }) -- Alt + k pour monter
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -237,6 +241,57 @@ require('lazy').setup({
   --
   -- Use `opts = {}` to force a plugin to be loaded.
   --
+
+  {
+    'sindrets/diffview.nvim',
+    dependencies = 'nvim-lua/plenary.nvim',
+    config = function()
+      require('diffview').setup {
+        enhanced_diff_hl = true, -- Active la coloration avancée des différences
+        view = {
+          default = {
+            layout = 'diff2_horizontal',
+          },
+        },
+        keymaps = {
+          view = {
+            ['<leader>e'] = '<cmd>DiffviewClose<CR>', -- Fermer Diffview avec <leader>e
+          },
+        },
+      }
+    end,
+  },
+
+  {
+    'lukas-reineke/indent-blankline.nvim',
+    config = function()
+      require('ibl').setup()
+    end,
+  },
+
+  {
+    'nvim-tree/nvim-tree.lua',
+    dependencies = {
+      'nvim-tree/nvim-web-devicons', -- Pour les icônes de fichiers
+    },
+    config = function()
+      require('nvim-tree').setup {
+        -- Configuration de base, vous pouvez ajouter d'autres options si nécessaire
+        auto_reload_on_write = true,
+        update_cwd = true,
+        diagnostics = {
+          enable = true,
+        },
+        view = {
+          width = 30,
+          side = 'left',
+        },
+      }
+
+      -- Raccourci pour ouvrir/fermer nvim-tree
+      vim.api.nvim_set_keymap('n', '<C-n>', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
+    end,
+  },
 
   -- Here is a more advanced example where we pass configuration
   -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
@@ -608,7 +663,7 @@ require('lazy').setup({
         -- clangd = {},
         -- gopls = {},
         -- pyright = {},
-        -- rust_analyzer = {},
+        rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -779,9 +834,9 @@ require('lazy').setup({
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
-          --['<CR>'] = cmp.mapping.confirm { select = true },
-          --['<Tab>'] = cmp.mapping.select_next_item(),
-          --['<S-Tab>'] = cmp.mapping.select_prev_item(),
+          ['<CR>'] = cmp.mapping.confirm { select = true },
+          ['<Tab>'] = cmp.mapping.select_next_item(),
+          ['<S-Tab>'] = cmp.mapping.select_prev_item(),
 
           -- Manually trigger a completion from nvim-cmp.
           --  Generally you don't need this, because nvim-cmp will display
